@@ -51,3 +51,79 @@ void inicializarArboles(NodoArbol* arboles[4]) {
         arboles[i] = crearArbolBalanceado(cartas, 0, 12);
     }
 }
+// Baraja el mazo
+void barajarMazo(Carta mazo[], int n) {
+    for (int i = n - 1; i > 0; --i) {
+        int j = rand() % (i + 1);
+        Carta temp = mazo[i];
+        mazo[i] = mazo[j];
+        mazo[j] = temp;
+    }
+}
+
+// Crea el mazo barajado como lista enlazada
+NodoCarta* crearMazoBarajado() {
+    Carta mazo[52];
+    char palos[4] = {'C', 'E', 'D', 'T'};
+    int m = 0;
+    for (int i = 0; i < 4; ++i)
+        for (int cat = 1; cat <= 13; ++cat)
+            mazo[m++] = Carta(palos[i], cat);
+
+    barajarMazo(mazo, 52);
+
+    NodoCarta* cabeza = nullptr;
+    NodoCarta* actual = nullptr;
+    for (int i = 0; i < 52; ++i) {
+        NodoCarta* nuevo = new NodoCarta(mazo[i]);
+        if (!cabeza) cabeza = nuevo;
+        else actual->sig = nuevo;
+        actual = nuevo;
+    }
+    return cabeza;
+}
+
+// Lista enlazada para la mano del jugador
+struct ManoJugador {
+    NodoCarta* cabeza = nullptr;
+    int cantidad = 0;
+    void agregarCarta(const Carta& c) {
+        NodoCarta* nuevo = new NodoCarta(c);
+        nuevo->sig = cabeza;
+        cabeza = nuevo;
+        cantidad++;
+    }
+    // Puedes agregar métodos para mostrar, descartar, etc.
+};
+
+// main de prueba temporal para probar funcionalidad inicial
+int main() {
+    srand(time(NULL));
+    NodoArbol* arboles[4] = {nullptr};
+    inicializarArboles(arboles);
+
+    NodoCarta* mazo = crearMazoBarajado();
+
+    ManoJugador mano;
+    // Reparte 8 cartas al jugador
+    for (int i = 0; i < 8; ++i) {
+        if (!mazo) break;
+        mano.agregarCarta(mazo->carta);
+        NodoCarta* temp = mazo;
+        mazo = mazo->sig;
+        delete temp;
+    }
+
+    std::cout << "Bienvenido a DataBalatro!\n";
+    std::cout << "Cartas en tu mano:\n";
+    NodoCarta* it = mano.cabeza;
+    while (it) {
+        std::cout << it->carta.Categoria << it->carta.Palo << " ";
+        it = it->sig;
+    }
+    std::cout << std::endl;
+
+
+
+    return 0;
+}
