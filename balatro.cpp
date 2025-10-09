@@ -95,7 +95,26 @@ struct ManoJugador {
     }
     // Puedes agregar métodos para mostrar, descartar, etc.
 };
-
+//  hice estás funciones vacias,tengo la idea de como hacerlas pero no me da el tiempo, ahi veo si es mejor hacerlas en una pura funcion  o no
+// que me voy para pichilemu ahora, por el camino veo si puedo avanzar algo
+// me falta arreglar la carpeta del git
+void jugar_cartas(ManoJugador& mano) {
+}
+void carta_alta(ManoJugador& mano) {
+    
+}
+void par(ManoJugador& mano) {
+}
+void doble_par(ManoJugador& mano) {
+}
+void tercia(ManoJugador& mano) {
+}  
+void escalera(ManoJugador& mano) {
+}
+void color(ManoJugador& mano) {
+}
+void poker(ManoJugador& mano) {
+}
 // main de prueba temporal para probar funcionalidad inicial
 int main() {
     srand(time(NULL));
