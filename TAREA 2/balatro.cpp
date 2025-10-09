@@ -1,0 +1,148 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+// Estructura de la carta
+struct Carta {
+    char Palo;      // 'C', 'E', 'D', 'T'
+    int Categoria;  // 1-13 (A=1, J=11, Q=12, K=13)
+    int Valor;      // 2-10: igual a Categoria, J/Q/K: 10, A: 11
+    bool Jugada;    // true si ya fue jugada en la ronda
+    Carta() {}
+    Carta(char p, int c) : Palo(p), Categoria(c), Jugada(false) {
+        if (c == 1) Valor = 11;
+        else if (c >= 11 && c <= 13) Valor = 10;
+        else Valor = c;
+    }
+};
+
+// Nodo para lista enlazada
+struct NodoCarta {
+    Carta carta;
+    NodoCarta* sig;
+    NodoCarta(const Carta& c) : carta(c), sig(nullptr) {}
+};
+
+// Árbol binario de búsqueda para cada palo
+struct NodoArbol {
+    Carta carta;
+    NodoArbol* izq;
+    NodoArbol* der;
+    NodoArbol(const Carta& c) : carta(c), izq(nullptr), der(nullptr) {}
+};
+
+// Inserción balanceada para crear el árbol de un palo
+NodoArbol* crearArbolBalanceado(Carta cartas[], int ini, int fin) {
+    if (ini > fin) return nullptr;
+    int mid = (ini + fin) / 2;
+    NodoArbol* nodo = new NodoArbol(cartas[mid]);
+    nodo->izq = crearArbolBalanceado(cartas, ini, mid - 1);
+    nodo->der = crearArbolBalanceado(cartas, mid + 1, fin);
+    return nodo;
+}
+
+// Inicializa los 4 árboles, uno por palo
+void inicializarArboles(NodoArbol* arboles[4]) {
+    char palos[4] = {'C', 'E', 'D', 'T'};
+    for (int i = 0; i < 4; ++i) {
+        Carta cartas[13];
+        for (int cat = 1; cat <= 13; ++cat)
+            cartas[cat - 1] = Carta(palos[i], cat);
+        arboles[i] = crearArbolBalanceado(cartas, 0, 12);
+    }
+}
+// Baraja el mazo
+void barajarMazo(Carta mazo[], int n) {
+    for (int i = n - 1; i > 0; --i) {
+        int j = rand() % (i + 1);
+        Carta temp = mazo[i];
+        mazo[i] = mazo[j];
+        mazo[j] = temp;
+    }
+}
+
+// Crea el mazo barajado como lista enlazada
+NodoCarta* crearMazoBarajado() {
+    Carta mazo[52];
+    char palos[4] = {'C', 'E', 'D', 'T'};
+    int m = 0;
+    for (int i = 0; i < 4; ++i)
+        for (int cat = 1; cat <= 13; ++cat)
+            mazo[m++] = Carta(palos[i], cat);
+
+    barajarMazo(mazo, 52);
+
+    NodoCarta* cabeza = nullptr;
+    NodoCarta* actual = nullptr;
+    for (int i = 0; i < 52; ++i) {
+        NodoCarta* nuevo = new NodoCarta(mazo[i]);
+        if (!cabeza) cabeza = nuevo;
+        else actual->sig = nuevo;
+        actual = nuevo;
+    }
+    return cabeza;
+}
+
+// Lista enlazada para la mano del jugador
+struct ManoJugador {
+    NodoCarta* cabeza = nullptr;
+    int cantidad = 0;
+    void agregarCarta(const Carta& c) {
+        NodoCarta* nuevo = new NodoCarta(c);
+        nuevo->sig = cabeza;
+        cabeza = nuevo;
+        cantidad++;
+    }
+    // Puedes agregar métodos para mostrar, descartar, etc.
+};
+//  hice estás funciones vacias,tengo la idea de como hacerlas pero no me da el tiempo, ahi veo si es mejor hacerlas en una pura funcion  o no
+// que me voy para pichilemu ahora, por el camino veo si puedo avanzar algo
+// me falta arreglar la carpeta del git
+void jugar_cartas(ManoJugador& mano) {
+}
+void carta_alta(ManoJugador& mano) {
+    
+}
+void par(ManoJugador& mano) {
+}
+void doble_par(ManoJugador& mano) {
+}
+void tercia(ManoJugador& mano) {
+}  
+void escalera(ManoJugador& mano) {
+}
+void color(ManoJugador& mano) {
+}
+void poker(ManoJugador& mano) {
+}
+// main de prueba temporal para probar funcionalidad inicial
+int main() {
+    srand(time(NULL));
+    NodoArbol* arboles[4] = {nullptr};
+    inicializarArboles(arboles);
+
+    NodoCarta* mazo = crearMazoBarajado();
+
+    ManoJugador mano;
+    // Reparte 8 cartas al jugador
+    for (int i = 0; i < 8; ++i) {
+        if (!mazo) break;
+        mano.agregarCarta(mazo->carta);
+        NodoCarta* temp = mazo;
+        mazo = mazo->sig;
+        delete temp;
+    }
+
+    std::cout << "Bienvenido a DataBalatro!\n";
+    std::cout << "Cartas en tu mano:\n";
+    NodoCarta* it = mano.cabeza;
+    while (it) {
+        std::cout << it->carta.Categoria << it->carta.Palo << " ";
+        it = it->sig;
+    }
+    std::cout << std::endl;
+
+
+
+    return 0;
+}
